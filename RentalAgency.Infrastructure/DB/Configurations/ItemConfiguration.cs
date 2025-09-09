@@ -11,6 +11,10 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
         builder.HasKey(i => i.Id);
         
         builder
+            .Property(i => i.Status)
+            .HasColumnType("item_status");
+        
+        builder
             .HasOne(i => i.Owner)
             .WithMany(u => u.Items)
             .HasForeignKey(i => i.OwnerId)

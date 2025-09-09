@@ -9,6 +9,10 @@ public class RentalOrderConfiguration : IEntityTypeConfiguration<RentalOrder>
     public void Configure(EntityTypeBuilder<RentalOrder> builder)
     {
         builder.HasKey(o => o.Id);
+
+        builder
+            .Property(o => o.Status)
+            .HasColumnName("order_status");
         
         builder
             .HasOne(o => o.Item)

@@ -20,6 +20,9 @@ namespace RentalAgency.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "item_status", new[] { "available", "rented", "maintenance" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "order_status", new[] { "active", "completed", "overdue", "cancelled" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "payment_status", new[] { "pending", "paid", "failed" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -178,7 +181,7 @@ namespace RentalAgency.Infrastructure.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
+                        .HasColumnType("item_status");
 
                     b.HasKey("Id");
 
@@ -205,7 +208,7 @@ namespace RentalAgency.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
+                        .HasColumnType("payment_status");
 
                     b.HasKey("Id");
 
@@ -235,7 +238,8 @@ namespace RentalAgency.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
+                        .HasColumnType("order_status")
+                        .HasColumnName("order_status");
 
                     b.Property<decimal>("TotalCost")
                         .HasColumnType("numeric");

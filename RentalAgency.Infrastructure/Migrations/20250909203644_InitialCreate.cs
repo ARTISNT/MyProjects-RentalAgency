@@ -12,6 +12,11 @@ namespace RentalAgency.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:Enum:item_status", "available,rented,maintenance")
+                .Annotation("Npgsql:Enum:order_status", "active,completed,overdue,cancelled")
+                .Annotation("Npgsql:Enum:payment_status", "pending,paid,failed");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -168,7 +173,7 @@ namespace RentalAgency.Infrastructure.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     PricePerDay = table.Column<decimal>(type: "numeric", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "item_status", nullable: false),
                     OwnerId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -194,7 +199,7 @@ namespace RentalAgency.Infrastructure.Migrations
                     EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ReturnDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     TotalCost = table.Column<decimal>(type: "numeric", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    order_status = table.Column<int>(type: "order_status", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -222,7 +227,7 @@ namespace RentalAgency.Infrastructure.Migrations
                     OrderId = table.Column<int>(type: "integer", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
                     PaymentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Status = table.Column<int>(type: "payment_status", nullable: false)
                 },
                 constraints: table =>
                 {

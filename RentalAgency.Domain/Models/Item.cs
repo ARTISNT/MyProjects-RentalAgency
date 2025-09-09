@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using NpgsqlTypes;
+
 namespace RentalAgency.Models;
 
 public class Item
@@ -6,6 +9,8 @@ public class Item
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
     public decimal PricePerDay { get; set; }
+    
+    [Column(TypeName = "item_status")]
     public ItemStatus Status { get; set; } = ItemStatus.Available;
 
     public string OwnerId { get; set; } =  null!;
@@ -14,6 +19,7 @@ public class Item
     public ICollection<RentalOrder> RentalOrders { get; set; } = new List<RentalOrder>();
 }
 
+[PgName("item_status")]
 public enum ItemStatus
 {
     Available,

@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using NpgsqlTypes;
+
 namespace RentalAgency.Models;
 
 public class RentalOrder
@@ -15,11 +18,14 @@ public class RentalOrder
     public DateTime? ReturnDate { get; set; }
 
     public decimal TotalCost { get; set; }
+    
+    [Column(TypeName = "order_status")]
     public OrderStatus Status { get; set; } = OrderStatus.Active;
 
     public ICollection<Payment> Payments { get; set; } = new List<Payment>();    
 }
 
+[PgName("order_status")]
 public enum OrderStatus
 {
     Active,

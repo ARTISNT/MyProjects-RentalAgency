@@ -20,6 +20,10 @@ public class RentalAgencyDbContext : IdentityDbContext<User>
     {
         base.OnModelCreating(builder);
 
+        builder.HasPostgresEnum<ItemStatus>();
+        builder.HasPostgresEnum<OrderStatus>();
+        builder.HasPostgresEnum<PaymentStatus>();
+
         builder.ApplyConfiguration(new ItemConfiguration());
         builder.ApplyConfiguration(new RentalOrderConfiguration());
         builder.ApplyConfiguration(new PaymentConfiguration());
