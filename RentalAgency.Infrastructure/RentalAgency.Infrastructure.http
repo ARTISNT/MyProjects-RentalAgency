@@ -1,0 +1,6 @@
+@RentalAgency.Infrastructure_HostAddress = http://localhost:5283
+
+GET {{RentalAgency.Infrastructure_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
