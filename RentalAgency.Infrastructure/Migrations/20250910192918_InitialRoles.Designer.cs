@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RentalAgency.Infrastructure.DB.Context;
@@ -11,9 +12,11 @@ using RentalAgency.Infrastructure.DB.Context;
 namespace RentalAgency.Infrastructure.Migrations
 {
     [DbContext(typeof(RentalAgencyDbContext))]
-    partial class RentalAgencyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250910192918_InitialRoles")]
+    partial class InitialRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,7 +190,7 @@ namespace RentalAgency.Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("RentalAgency.Models.Payment", b =>
@@ -214,7 +217,7 @@ namespace RentalAgency.Infrastructure.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("RentalAgency.Models.RentalOrder", b =>
@@ -254,7 +257,7 @@ namespace RentalAgency.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("RentalAgency.Models.User", b =>

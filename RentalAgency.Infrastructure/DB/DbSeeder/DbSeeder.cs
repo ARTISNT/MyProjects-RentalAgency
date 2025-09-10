@@ -13,7 +13,7 @@ public class DbSeeder
         {
             if (!await roleManager.RoleExistsAsync(role))
             {
-                roleManager.CreateAsync(new IdentityRole(role));
+                await roleManager.CreateAsync(new IdentityRole(role));
             }
         }
     }
