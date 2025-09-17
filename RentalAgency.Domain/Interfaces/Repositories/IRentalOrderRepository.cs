@@ -7,6 +7,6 @@ public interface IRentalOrderRepository
     public Task<IReadOnlyCollection<RentalOrder>> GetAllAsync();
     public Task<RentalOrder?> GetByIdAsync(int id);
     public Task<RentalOrder> CreateAsync(RentalOrder rentalOrder);
-    public Task<RentalOrder> UpdateAsync(RentalOrder rentalOrder);
-    public Task<bool> DeleteAsync(int id);
+    public Task<RentalOrder> UpdateAsync(int id,RentalOrder rentalOrder);
+    public Task<RentalOrder> DeleteAsync(int id);
 }
