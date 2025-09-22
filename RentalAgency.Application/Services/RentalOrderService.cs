@@ -8,11 +8,13 @@ public class RentalOrderService : IRentalOrderService
 {
     private readonly IRentalOrderRepository _rentalOrderRepository;
     private readonly IItemService _itemService;
+    private readonly IPaymentService _paymentService;
 
-    public RentalOrderService(IRentalOrderRepository rentalOrderRepository, IItemService itemService)
+    public RentalOrderService(IRentalOrderRepository rentalOrderRepository, IItemService itemService,  IPaymentService paymentService)
     {
         _itemService =  itemService;
         _rentalOrderRepository = rentalOrderRepository;
+        _paymentService = paymentService;
     }
     
     public async Task<IReadOnlyCollection<RentalOrder>> GetAllAsync()
@@ -56,7 +58,6 @@ public class RentalOrderService : IRentalOrderService
 
     public async Task<OrderStatus> UpdateStatusAsync(int id, OrderStatus status)
     {
-
         var rentalOrder = await GetRequiredRentalOrderAsync(id);
         
         rentalOrder.Status = status;
@@ -70,12 +71,29 @@ public class RentalOrderService : IRentalOrderService
     public async Task<RentalOrder> SetAsCompletedAsync(int id)
     {
         var rentalOrder = await GetRequiredRentalOrderAsync(id);
+        var payments = rentalOrder.Payments;
         
-        await _itemService.UpdateStatusAsync(rentalOrder.Item.Id, ItemStatus.Available);
-        rentalOrder.Status = OrderStatus.Completed;
-        await _rentalOrderRepository.UpdateAsync(id, rentalOrder);
+        decimal tolerance = 0.01m;
+        decimal paidAmount = rentalOrder.Payments.Select(p => p.Amount).Sum();
+        decimal difference = paidAmount - rentalOrder.TotalCost;
 
-        var updatedRentalOrder = await GetRequiredRentalOrderAsync(id);
+        if (Math.Abs(difference) <= tolerance)
+        {
+            await _itemService.UpdateStatusAsync(rentalOrder.Item.Id, ItemStatus.Available);
+            await Task.WhenAll(payments.Select(p => _paymentService.UpdateStatusAsync(p.Id, PaymentStatus.Paid)));
+            
+            rentalOrder.Status = OrderStatus.Completed;
+        }
+        else if (difference < 0)
+        {
+            throw new Exception("Total cost is greater than payments");
+        }
+        else
+        {
+            throw new Exception("Total cost is less than payments");
+        }
+        var updatedRentalOrder = await _rentalOrderRepository.UpdateAsync(id, rentalOrder);
+
         return updatedRentalOrder;
     }
 
@@ -93,7 +111,6 @@ public class RentalOrderService : IRentalOrderService
 
     private async Task<RentalOrder> GetRequiredRentalOrderAsync(int id)
     {
-        
         var rentalOrder = await _rentalOrderRepository.GetByIdAsync(id);
         
         if (rentalOrder == null)

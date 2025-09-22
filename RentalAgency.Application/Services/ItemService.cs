@@ -20,7 +20,7 @@ public class ItemService : IItemService
 
     public async Task<Item?> GetByIdAsync(int id)
     {
-        return await _itemRepository.GetByIdAsync(id);
+        return await _itemRepository.GetByIdAsync(id) ?? throw new KeyNotFoundException("Item not found");
     }
 
     public async Task<Item> CreateAsync(Item item)
