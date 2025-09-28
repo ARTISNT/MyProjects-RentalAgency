@@ -1,3 +1,5 @@
+using RentalAgency.CustomExceptions.NotFoundExceptions;
+using RentalAgency.CustomExceptions.ValidtionExceptions;
 using RentalAgency.Interfaces.Repositories;
 using RentalAgency.Models;
 using UseCase.Abstractions.Interfaces;
@@ -20,18 +22,18 @@ public class ItemService : IItemService
 
     public async Task<Item?> GetByIdAsync(int id)
     {
-        return await _itemRepository.GetByIdAsync(id) ?? throw new KeyNotFoundException("Item not found");
+        return await GetRequiredItemAsync(id);
     }
 
     public async Task<Item> CreateAsync(Item item)
     {
-        if (item == null) throw new ArgumentNullException(nameof(item));
+        CheckItemForNull(item);
         return await _itemRepository.CreateAsync(item);
     }
 
     public async Task<Item> UpdateAsync(int id, Item item)
     {
-        if (item == null) throw new ArgumentNullException(nameof(item));
+        CheckItemForNull(item);
         return await _itemRepository.UpdateAsync(id, item);
     }
 
@@ -54,7 +56,7 @@ public class ItemService : IItemService
         item.Status = status;
 
         var updatedItem = await _itemRepository.UpdateAsync(id, item) 
-                          ?? throw new KeyNotFoundException("Item not found");
+                          ?? throw new ItemNotFoundException(id);
         
         return updatedItem.Status;
     }
@@ -62,10 +64,18 @@ public class ItemService : IItemService
     private async Task<Item> GetRequiredItemAsync(int id)
     {
         var item = await _itemRepository.GetByIdAsync(id);
-        
+
         if (item == null)
-            throw new KeyNotFoundException("Item not found");
+            throw new ItemNotFoundException(id);
         
         return item;
+    }
+
+    private void CheckItemForNull(Item item)
+    {
+        if (item == null)
+        {
+            throw new EntityValidationException("Item cannot be null");
+        }
     }
 }
