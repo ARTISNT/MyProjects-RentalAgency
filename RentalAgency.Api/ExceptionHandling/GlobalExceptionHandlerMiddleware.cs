@@ -3,17 +3,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace RentalAgency.Api.ExceptionHandling;
 
-public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
+public class GlobalExceptionHandlerMiddleware
 {
-    public async Task InvokeAsync(HttpContext context, ILogger<GlobalExceptionHandlerMiddleware> logger)
+    private readonly RequestDelegate _next;
+    private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger;
+
+    public GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
+    
+    public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await next(context);
+            await _next(context);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unhandled exception");
+            _logger.LogError(ex, "Unhandled exception");
             var path = context.Request.Path;
             var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
 
