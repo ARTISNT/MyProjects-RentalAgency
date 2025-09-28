@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RentalAgency.CustomExceptions.NotFoundExceptions;
 using RentalAgency.Infrastructure.DB.Context;
 using RentalAgency.Interfaces.Repositories;
 using RentalAgency.Models;
@@ -21,10 +22,7 @@ public class ItemRepository : IItemRepository
 
     public async Task<Item?> GetByIdAsync(int id)
     {
-        var item = await _rentalAgencyDbContext.Items.FirstOrDefaultAsync(i => i.Id == id);
-        
-        if (item == null)
-            throw new KeyNotFoundException($"Item with id {id} not found");
+        var item = EnsureFound(await _rentalAgencyDbContext.Items.FirstOrDefaultAsync(i => i.Id == id), id);
         
         return item;
     }
@@ -38,10 +36,7 @@ public class ItemRepository : IItemRepository
 
     public async Task<Item> UpdateAsync(int id, Item item)
     {
-        var itemToUpdate = await _rentalAgencyDbContext.Items.FirstOrDefaultAsync(i => i.Id == id);
-        
-        if (itemToUpdate == null)
-            throw new KeyNotFoundException($"Item with id {id} not found");
+        var itemToUpdate = EnsureFound(await _rentalAgencyDbContext.Items.FirstOrDefaultAsync(i => i.Id == id), id);
         
         _rentalAgencyDbContext.Entry(itemToUpdate).CurrentValues.SetValues(item);
         await _rentalAgencyDbContext.SaveChangesAsync();
@@ -51,12 +46,18 @@ public class ItemRepository : IItemRepository
 
     public async Task<Item> DeleteAsync(int id)
     {
-        var itemToDelete = await _rentalAgencyDbContext.Items.FirstOrDefaultAsync(i => i.Id == id);
-        if (itemToDelete == null)
-            throw new KeyNotFoundException("Item with id {id} not found");
+        var itemToDelete = EnsureFound(await _rentalAgencyDbContext.Items.FirstOrDefaultAsync(i => i.Id == id), id);
         
         _rentalAgencyDbContext.Items.Remove(itemToDelete);
         await _rentalAgencyDbContext.SaveChangesAsync();
         return itemToDelete;
+    }
+    
+    private static Item EnsureFound(Item? entity, int id)
+    {
+        if (entity is null)
+            throw new ItemNotFoundException(id);
+
+        return entity;
     }
 }
